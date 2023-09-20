@@ -1,4 +1,4 @@
-import {Badge, Navbar, Nav, Container} from 'react-bootstrap';
+import {Badge, Navbar, Nav, Container, NavDropdown} from 'react-bootstrap';
 import {LinkContainer} from 'react-router-bootstrap'
 import {FaShoppingCart, FaUser} from 'react-icons/fa';
 import logo from '../assets/smart-dairy-logo.png'
@@ -6,6 +6,11 @@ import { UseSelector, useSelector } from 'react-redux/es/hooks/useSelector';
 
 export const Header = () => {
   const {cartItems } = useSelector((state) => state.cart);
+  const {userInfo} = useSelector((state) => state.auth)
+
+  const logoutHandler = () => {
+    console.log('logout');
+  }
 
   return (
     <header>
@@ -32,11 +37,23 @@ export const Header = () => {
                   }
                 </Nav.Link>
               </LinkContainer>
-              <LinkContainer to='/login'>
-                <Nav.Link >
+              {userInfo ? (
+                <NavDropdown title = {userInfo.name} id='username'>
+                  <LinkContainer to='/profile'>
+                    <NavDropdown.Item>Profile</NavDropdown.Item>
+                  </LinkContainer>
+                  <NavDropdown.Item onClick={logoutHandler}>
+                    Logout
+                  </NavDropdown.Item>
+                </NavDropdown>
+              ) : (
+                <LinkContainer to='/login'>
+                <Nav.Link href='/login'>
                   <FaUser /> Sign In
                 </Nav.Link>
               </LinkContainer>
+              ) }
+              
             </Nav>
           </Navbar.Collapse>
         </Container>
