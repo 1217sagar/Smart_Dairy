@@ -1,15 +1,31 @@
 import {Badge, Navbar, Nav, Container, NavDropdown} from 'react-bootstrap';
-import {LinkContainer} from 'react-router-bootstrap'
+import {LinkContainer} from 'react-router-bootstrap';
+import {useNavigate} from 'react-router-dom';
 import {FaShoppingCart, FaUser} from 'react-icons/fa';
 import logo from '../assets/smart-dairy-logo.png'
-import { UseSelector, useSelector } from 'react-redux/es/hooks/useSelector';
+import { useSelector } from 'react-redux/es/hooks/useSelector';
+import { useLogoutMutation } from '../slices/userApiSlice';
+import { logout } from '../slices/authSlice';
+import { useDispatch } from 'react-redux';
 
 export const Header = () => {
   const {cartItems } = useSelector((state) => state.cart);
-  const {userInfo} = useSelector((state) => state.auth)
+  const {userInfo} = useSelector((state) => state.auth);
 
-  const logoutHandler = () => {
-    console.log('logout');
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const [logoutApiCall] = useLogoutMutation()
+
+  const logoutHandler = async () => {
+    try{
+      await logoutApiCall().unwrap();
+      dispatch(logout())
+      navigate('/login');
+    }
+    catch(error){
+      console.log(error);
+    }
   }
 
   return (
