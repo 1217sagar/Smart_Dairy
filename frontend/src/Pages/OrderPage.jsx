@@ -1,10 +1,11 @@
 import {Link, useParams} from 'react-router-dom';
-import {Row, Col, Button, ListGroup, Image, Form, Card} from 'react-bootstrap';
+import {Row, Col, Button, ListGroup, Image, Card} from 'react-bootstrap';
 import Message from '../components/Message';
 import { 
   useGetOrderDetailsQuery,
   usePayOrderMutation,
-  useGetPayPalClientIdQuery 
+  useGetPayPalClientIdQuery,
+  useDeliveredOrderMutation 
 } from '../slices/ordersApiSlice';
 import Loader from '../components/Loader';
 import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';  
@@ -19,6 +20,7 @@ const OrderPage = () => {
   const [{isPending}, paypalDispatch] = usePayPalScriptReducer();
   const {userInfo} = useSelector((state) => state.auth);
   const {data: paypal, isLoading: loadingPayPal, error: errorPayPal} = useGetPayPalClientIdQuery();
+  const [deliverOrder, {isLoading: loadingDeliver}] = useDeliveredOrderMutation();
 
   useEffect(() => {
     if(!errorPayPal && !loadingPayPal && paypal.clientId){
@@ -74,6 +76,17 @@ const OrderPage = () => {
       .then((orderId) => {
         return orderId;
       })
+  }
+
+  const deliverOrderHandler = async () => {
+    try{
+      await deliverOrder(orderId);
+      refetch();
+      toast.success('Order Delivered');
+    }
+    catch(err){
+      toast.error(err?.data?.message || err.message);
+    }
   }
 
   return (
@@ -198,8 +211,17 @@ const OrderPage = () => {
                   )}
                 </ListGroup.Item>
               )}
-              
-              {/*Mark as delivered placeholder */}
+
+              {loadingDeliver && <Loader />}
+              {userInfo && userInfo.isAdmin && order.isPaid &&
+              !order.isDelivered && (
+                <ListGroup.Item>
+                  <Button type='button' className='btn btn-block'
+                  onClick={deliverOrderHandler}>
+                    Mark as Delivered
+                  </Button>
+                </ListGroup.Item>
+              )}
             </ListGroup>
           </Card>
           </Col>

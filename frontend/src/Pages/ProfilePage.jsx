@@ -143,6 +143,13 @@ const ProfilePage = () => {
                       )
                     }
                   </td>
+                  <td>
+                    <LinkContainer to={`/order/${order._id}`}>
+                      <Button className="btn-sm" variant="light">
+                        Details
+                      </Button>
+                    </LinkContainer>
+                  </td>
                 </tr>
               ))}
             </body>
