@@ -3,7 +3,7 @@ import { Table, Button, Row, Col } from "react-bootstrap"
 import { FaEdit, FaTrash } from "react-icons/fa"
 import Message from "../../components/Message"
 import Loader from "../../components/Loader"
-import {useGetProductsQuery, useCreateProductMutation} from '../../slices/productApiSlice'
+import {useGetProductsQuery, useCreateProductMutation, useDeleteProductMutation} from '../../slices/productApiSlice'
 import { toast } from "react-toastify"
 
 const ProductListPage = () => {
@@ -11,8 +11,18 @@ const ProductListPage = () => {
 
   const [createProduct, {isLoading: loadingCreate}, refetch] = useCreateProductMutation();
 
-  const deleteHandler = (id) => {
+  const [deleteProduct, {isLoading: loadingDelete}] = useDeleteProductMutation();
 
+  const deleteHandler = async(id) => {
+    if(window.confirm('Are you sure')){
+      try{
+        await (deleteProduct(id));
+        refetch();
+      }
+      catch(err){
+        toast.error(err?.data?.message || err.error)
+      }
+    }
   }
 
   const createProductHandler = async() => {
@@ -40,6 +50,7 @@ const ProductListPage = () => {
         </Col>
       </Row>
       {loadingCreate && <Loader />}
+      {loadingDelete && <Loader />}
       {isLoading ? <Loader /> : error ? (
         <Message variant='danger'>{error}</Message>
       ) : (

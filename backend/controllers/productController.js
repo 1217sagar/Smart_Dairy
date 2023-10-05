@@ -39,7 +39,7 @@ const createProduct = asyncHandler(async(req, res) => {
   res.status(201).json(createProduct);
 });
 
-//Update a products, API: PUT /api/products/:id, access: Private/admin
+//Update a product, API: PUT /api/products/:id, access: Private/admin
 const updateProduct = asyncHandler(async(req, res) => {
   const {name, price, description, image, brand, category, countInStock}
     = req.body;
@@ -64,4 +64,18 @@ const updateProduct = asyncHandler(async(req, res) => {
   }
 })
 
-export {getProducts, getProductsById, createProduct, updateProduct};
+//Delete a product, API: DELETE /api/products/:id, access: Private/admin
+const deleteProduct = asyncHandler(async(req, res) => {
+  const product = await Product.findById(req.params.id);
+
+  if(product){
+    await Product.deleteOne({_id: product._id});
+    res.status(200).json({message: 'Product Deleted'}); 
+  }
+  else{
+    res.status(404);
+    throw new Error('Resource not found');
+  }
+})
+
+export {getProducts, getProductsById, createProduct, updateProduct, deleteProduct};
