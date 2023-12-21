@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux/es/hooks/useSelector';
 import { useLogoutMutation } from '../slices/userApiSlice';
 import { logout } from '../slices/authSlice';
 import { useDispatch } from 'react-redux';
+import SearchBox from './SearchBox';
 
 export const Header = () => {
   const {cartItems } = useSelector((state) => state.cart);
@@ -41,6 +42,7 @@ export const Header = () => {
           <Navbar.Toggle aria-controls='basic-navbar-nav' />
           <Navbar.Collapse id='basic-navbar-nav'> 
             <Nav className='ms-auto'>
+              <SearchBox />
               <LinkContainer to='/cart'>
                 <Nav.Link>
                   <FaShoppingCart /> Cart
